@@ -1,7 +1,7 @@
 // Test client for the JavaScript API
 // Run with: node test_js_client.js
 
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 
 // Base URL - using the deployed Vercel app URL
 const BASE_URL = 'https://minilm-yzpj.vercel.app/api';
@@ -165,3 +165,8 @@ async function runTests() {
 }
 
 runTests().catch(console.error);
+
+// This file is an ES module. Run with:
+// node --experimental-modules test_js_client.js
+// or
+// node test_js_client.js (if package.json has "type": "module")
