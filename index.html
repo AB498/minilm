@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniLM API Tester</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+        .card {
+            margin-bottom: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+        .card-header {
+            background-color: #6c757d;
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 1rem;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .api-url-container {
+            margin-bottom: 1.5rem;
+        }
+        .response-container {
+            margin-top: 1rem;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            padding: 1rem;
+        }
+        .spinner-border {
+            display: none;
+            margin-left: 10px;
+        }
+        .confidence-meter {
+            height: 10px;
+            border-radius: 5px;
+            background-color: #e9ecef;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        .confidence-value {
+            height: 100%;
+            background-color: #0d6efd;
+            transition: width 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">MiniLM API Tester</h1>
+        
+        <div class="api-url-container">
+            <div class="input-group">
+                <span class="input-group-text">API URL</span>
+                <input type="text" id="apiUrl" class="form-control" value="https://minilm-yzpj.vercel.app" placeholder="Enter API URL">
+            </div>
+            <div class="form-text">Default: https://minilm-yzpj.vercel.app</div>
+        </div>
+
+        <div class="row">
+            <!-- Health Check Section -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Health Check</div>
+                    <div class="card-body">
+                        <p>Test the server health endpoint</p>
+                        <button id="healthCheckBtn" class="btn btn-primary">
+                            Check Health
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        </button>
+                        <div id="healthResponse" class="response-container mt-3" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Embedding Section -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">Text Embedding</div>
+                    <div class="card-body">
+                        <p>Generate embeddings for text</p>
+                        <div class="mb-3">
+                            <label for="embedText" class="form-label">Enter text (separate multiple texts with new lines)</label>
+                            <textarea id="embedText" class="form-control" rows="3" placeholder="Enter text here..."></textarea>
+                        </div>
+                        <button id="embedBtn" class="btn btn-primary">
+                            Generate Embeddings
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        </button>
+                        <div id="embedResponse" class="response-container mt-3" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ Answer Section -->
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">FAQ Answer</div>
+                    <div class="card-body">
+                        <p>Ask a question to get an answer from the FAQ database</p>
+                        <div class="mb-3">
+                            <label for="questionText" class="form-label">Enter your question</label>
+                            <input type="text" id="questionText" class="form-control" placeholder="e.g., How do I donate?">
+                        </div>
+                        <button id="questionBtn" class="btn btn-primary">
+                            Get Answer
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        </button>
+                        <div id="questionResponse" class="response-container mt-3" style="display: none;">
+                            <div id="matchedQuestion" class="fw-bold mb-2"></div>
+                            <div id="answerText" class="mb-3"></div>
+                            <div>
+                                <small class="text-muted">Confidence Score: <span id="confidenceScore">0</span></small>
+                                <div class="confidence-meter">
+                                    <div class="confidence-value" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Health Check
+            document.getElementById('healthCheckBtn').addEventListener('click', async function() {
+                const button = this;
+                const spinner = button.querySelector('.spinner-border');
+                const responseContainer = document.getElementById('healthResponse');
+                
+                spinner.style.display = 'inline-block';
+                button.disabled = true;
+                responseContainer.style.display = 'none';
+                
+                try {
+                    const apiUrl = document.getElementById('apiUrl').value.trim() || 'https://minilm-yzpj.vercel.app';
+                    const response = await fetch(`${apiUrl}/health`);
+                    const data = await response.json();
+                    
+                    responseContainer.innerHTML = `
+                        <div class="alert ${response.ok ? 'alert-success' : 'alert-danger'}">
+                            Status: ${response.status} ${response.statusText}
+                        </div>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } catch (error) {
+                    responseContainer.innerHTML = `
+                        <div class="alert alert-danger">
+                            Error: ${error.message}
+                        </div>
+                    `;
+                } finally {
+                    spinner.style.display = 'none';
+                    button.disabled = false;
+                    responseContainer.style.display = 'block';
+                }
+            });
+
+            // Embedding
+            document.getElementById('embedBtn').addEventListener('click', async function() {
+                const button = this;
+                const spinner = button.querySelector('.spinner-border');
+                const responseContainer = document.getElementById('embedResponse');
+                const textInput = document.getElementById('embedText').value.trim();
+                
+                if (!textInput) {
+                    alert('Please enter some text to embed');
+                    return;
+                }
+                
+                spinner.style.display = 'inline-block';
+                button.disabled = true;
+                responseContainer.style.display = 'none';
+                
+                try {
+                    const apiUrl = document.getElementById('apiUrl').value.trim() || 'https://minilm-yzpj.vercel.app';
+                    const texts = textInput.split('\n').filter(text => text.trim() !== '');
+                    
+                    const response = await fetch(`${apiUrl}/embed`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ texts })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        const embeddings = data.embeddings;
+                        responseContainer.innerHTML = `
+                            <div class="alert alert-success">
+                                Successfully generated embeddings for ${embeddings.length} text(s)
+                            </div>
+                            <p>First embedding dimensions: ${embeddings[0].length}</p>
+                            <p>Sample values (first 5):</p>
+                            <pre>${JSON.stringify(embeddings[0].slice(0, 5), null, 2)}</pre>
+                        `;
+                    } else {
+                        responseContainer.innerHTML = `
+                            <div class="alert alert-danger">
+                                Error: ${data.error || 'Unknown error'}
+                            </div>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        `;
+                    }
+                } catch (error) {
+                    responseContainer.innerHTML = `
+                        <div class="alert alert-danger">
+                            Error: ${error.message}
+                        </div>
+                    `;
+                } finally {
+                    spinner.style.display = 'none';
+                    button.disabled = false;
+                    responseContainer.style.display = 'block';
+                }
+            });
+
+            // FAQ Answer
+            document.getElementById('questionBtn').addEventListener('click', async function() {
+                const button = this;
+                const spinner = button.querySelector('.spinner-border');
+                const responseContainer = document.getElementById('questionResponse');
+                const questionInput = document.getElementById('questionText').value.trim();
+                
+                if (!questionInput) {
+                    alert('Please enter a question');
+                    return;
+                }
+                
+                spinner.style.display = 'inline-block';
+                button.disabled = true;
+                responseContainer.style.display = 'none';
+                
+                try {
+                    const apiUrl = document.getElementById('apiUrl').value.trim() || 'https://minilm-yzpj.vercel.app';
+                    
+                    const response = await fetch(`${apiUrl}/answer`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ question: questionInput })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        document.getElementById('matchedQuestion').textContent = `Q: ${data.matchedQuestion}`;
+                        document.getElementById('answerText').textContent = `A: ${data.answer}`;
+                        
+                        const confidenceScore = data.confidence;
+                        document.getElementById('confidenceScore').textContent = confidenceScore.toFixed(4);
+                        
+                        // Update confidence meter (scale from 0 to 1)
+                        const confidencePercent = Math.max(0, Math.min(100, confidenceScore * 100));
+                        document.querySelector('.confidence-value').style.width = `${confidencePercent}%`;
+                        
+                        // Change color based on confidence
+                        let confidenceColor = '#dc3545'; // red
+                        if (confidenceScore > 0.7) {
+                            confidenceColor = '#198754'; // green
+                        } else if (confidenceScore > 0.5) {
+                            confidenceColor = '#ffc107'; // yellow
+                        }
+                        document.querySelector('.confidence-value').style.backgroundColor = confidenceColor;
+                    } else {
+                        responseContainer.innerHTML = `
+                            <div class="alert alert-danger">
+                                Error: ${data.error || 'Unknown error'}
+                            </div>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        `;
+                    }
+                } catch (error) {
+                    responseContainer.innerHTML = `
+                        <div class="alert alert-danger">
+                            Error: ${error.message}
+                        </div>
+                    `;
+                } finally {
+                    spinner.style.display = 'none';
+                    button.disabled = false;
+                    responseContainer.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
