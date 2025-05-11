@@ -8,7 +8,12 @@
     "deploy": "vercel deploy --prod"
   },
   "dependencies": {
-    "@huggingface/transformers": "^3.0.0-alpha.14"
+    "@huggingface/transformers": "^3.0.0-alpha.14",
+    "@tensorflow/tfjs-node": "^4.17.0",
+    "@xenova/transformers": "^2.15.1",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "node-fetch": "^2.6.7"
   },
   "devDependencies": {
     "vercel": "^33.5.3"
