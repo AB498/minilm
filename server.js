@@ -1,13 +1,18 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const fs = require('fs');
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 // Import API handlers
-const embedHandler = require('./api/embed');
-const faqHandler = require('./api/faq');
-const infoHandler = require('./api/info');
-const indexHandler = require('./api/index');
+import embedHandler from './api/embed.js';
+import faqHandler from './api/faq.js';
+import infoHandler from './api/info.js';
+import indexHandler from './api/index.js';
+
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;

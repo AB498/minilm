@@ -1,6 +1,6 @@
-const { getEmbeddings, corsHeaders, handleCors } = require('./_utils');
+import { getEmbeddings, corsHeaders, handleCors } from './_utils.js';
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   // Handle CORS
   if (handleCors(req, res)) return;
 
@@ -16,23 +16,23 @@ module.exports = async (req, res) => {
 
   try {
     const startTime = Date.now();
-    
+
     // Get text from request
     const data = req.body;
-    
+
     if (!data || !data.texts) {
       return res.status(400).json({ error: 'Please provide texts to embed' });
     }
-    
+
     // Ensure texts is an array
     const texts = Array.isArray(data.texts) ? data.texts : [data.texts];
-    
+
     // Generate embeddings
     const embeddings = await getEmbeddings(texts);
-    
+
     // Calculate processing time
     const processingTime = (Date.now() - startTime) / 1000;
-    
+
     // Return response
     return res.status(200).json({
       embeddings: embeddings,
@@ -40,7 +40,7 @@ module.exports = async (req, res) => {
       processing_time_seconds: processingTime,
       texts_processed: texts.length
     });
-    
+
   } catch (error) {
     console.error('Error generating embeddings:', error);
     return res.status(500).json({ error: error.message });

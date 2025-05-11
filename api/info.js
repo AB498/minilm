@@ -1,6 +1,6 @@
-const { getEmbeddingModel, corsHeaders, handleCors } = require('./_utils');
+import { getEmbeddingModel, corsHeaders, handleCors } from './_utils.js';
 
-module.exports = async (req, res) => {
+export default async (req, res) => {
   // Handle CORS
   if (handleCors(req, res)) return;
 
@@ -17,14 +17,14 @@ module.exports = async (req, res) => {
   try {
     // Load the model if not already loaded
     await getEmbeddingModel();
-    
+
     // Return model info
     return res.status(200).json({
       model_name: 'Xenova/all-MiniLM-L6-v2',
       embedding_dimensions: 384,
       max_sequence_length: 128
     });
-    
+
   } catch (error) {
     console.error('Error getting model info:', error);
     return res.status(500).json({ error: error.message });

@@ -1,10 +1,18 @@
-// Import the transformers library
-const { pipeline, env } = require('@xenova/transformers');
+// We'll use dynamic imports for the transformers library
+let transformers = null;
 
-// Set environment variables
-env.allowLocalModels = false;
-env.useBrowserCache = false;
-env.cacheDir = '/tmp/transformers_cache/';
+// Function to initialize transformers
+async function initTransformers() {
+  if (!transformers) {
+    transformers = await import('@xenova/transformers');
+
+    // Set environment variables
+    transformers.env.allowLocalModels = false;
+    transformers.env.useBrowserCache = false;
+    transformers.env.cacheDir = '/tmp/transformers_cache/';
+  }
+  return transformers;
+}
 
 // FAQ data
 const FAQS = [
@@ -58,6 +66,7 @@ let faqEmbeddings = null;
 async function getEmbeddingModel() {
   if (!embeddingModel) {
     console.log("Loading model... This may take a moment.");
+    const { pipeline } = await initTransformers();
     embeddingModel = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
     console.log("Model loaded successfully!");
   }
@@ -104,7 +113,7 @@ async function findBestFaqMatch(queryText, topK = 1) {
   }
 
   // Calculate cosine similarities
-  const similarities = faqEmbeddings.map(embedding => 
+  const similarities = faqEmbeddings.map(embedding =>
     cosineSimilarity(queryEmbedding, embedding)
   );
 
@@ -140,7 +149,7 @@ function handleCors(req, res) {
   return false;
 }
 
-module.exports = {
+export {
   getEmbeddingModel,
   getEmbedding,
   getEmbeddings,

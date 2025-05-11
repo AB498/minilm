@@ -1,6 +1,6 @@
-const { corsHeaders, handleCors } = require('./_utils');
+import { corsHeaders, handleCors } from './_utils.js';
 
-module.exports = (req, res) => {
+export default (req, res) => {
   // Handle CORS
   if (handleCors(req, res)) return;
 

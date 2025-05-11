@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "MiniLM Text Embedding Server as Vercel Serverless Functions",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "node server.js",
     "deploy": "vercel deploy --prod"

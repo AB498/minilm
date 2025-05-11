@@ -3,13 +3,13 @@
 
 const fetch = require('node-fetch');
 
-// Base URL - change this to your deployed Vercel app URL when testing
-const BASE_URL = 'http://localhost:3000/api';
+// Base URL - using the deployed Vercel app URL
+const BASE_URL = 'https://minilm-yzpj.vercel.app/api';
 
 // Test the embedding service
 async function testEmbeddingService() {
   console.log('Testing embedding service...');
-  
+
   try {
     const response = await fetch(`${BASE_URL}/embed`, {
       method: 'POST',
@@ -18,24 +18,24 @@ async function testEmbeddingService() {
         texts: ["This is an example sentence", "Each sentence is converted"]
       })
     });
-    
+
     if (response.ok) {
       const data = await response.json();
       console.log(`Success! Processed ${data.texts_processed} texts`);
       console.log(`Embedding dimensions: ${data.dimensions}`);
       console.log(`Processing time: ${data.processing_time_seconds.toFixed(3)} seconds`);
-      
+
       // Print first few dimensions of first embedding as example
       const firstEmbedding = data.embeddings[0];
       const previewSize = Math.min(5, firstEmbedding.length);
-      
+
       console.log(`\nExample (first ${previewSize} dimensions of first embedding):`);
       console.log(JSON.stringify(firstEmbedding.slice(0, previewSize), null, 2));
       console.log(`... (${firstEmbedding.length - previewSize} more dimensions)`);
-      
+
       // Get model info
       await testModelInfo();
-      
+
       return true;
     } else {
       console.log(`Error: ${response.status}`);
@@ -51,10 +51,10 @@ async function testEmbeddingService() {
 // Test the model info endpoint
 async function testModelInfo() {
   console.log('\nTesting model info endpoint...');
-  
+
   try {
     const response = await fetch(`${BASE_URL}/info`);
-    
+
     if (response.ok) {
       const data = await response.json();
       console.log('Model Information:');
@@ -76,7 +76,7 @@ async function testModelInfo() {
 // Test the FAQ search functionality
 async function testFaqSearch() {
   console.log('\nTesting FAQ search functionality...');
-  
+
   const testQueries = [
     "How do I donate money?",
     "What documents do I need if I don't have an ID?",
@@ -84,10 +84,10 @@ async function testFaqSearch() {
     "How long will it take to receive help?",
     "Can I apply for someone else?"
   ];
-  
+
   for (const query of testQueries) {
     console.log(`\nQuery: "${query}"`);
-    
+
     try {
       const response = await fetch(`${BASE_URL}/faq`, {
         method: 'POST',
@@ -97,15 +97,15 @@ async function testFaqSearch() {
           top_k: 1
         })
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         console.log(`Processing time: ${data.processing_time_seconds.toFixed(3)} seconds`);
-        
+
         if (data.matches && data.matches.length > 0) {
           const match = data.matches[0];
           const scorePercentage = match.score * 100;
-          
+
           console.log(`Best match (${scorePercentage.toFixed(1)}%):`);
           console.log(`Q: ${match.question}`);
           console.log(`A: ${match.answer}`);
@@ -116,14 +116,14 @@ async function testFaqSearch() {
         console.log(`Error: ${response.status}`);
         console.log(await response.text());
       }
-      
+
       console.log('-'.repeat(50));
     } catch (error) {
       console.log(`Error: ${error.message}`);
       break;
     }
   }
-  
+
   // Test with multiple results
   console.log('\nTesting with multiple results:');
   try {
@@ -135,14 +135,14 @@ async function testFaqSearch() {
         top_k: 3
       })
     });
-    
+
     if (response.ok) {
       const data = await response.json();
-      
+
       console.log(`Query: "How can I donate?"`);
       console.log(`Processing time: ${data.processing_time_seconds.toFixed(3)} seconds`);
       console.log(`Found ${data.matches.length} matches:`);
-      
+
       data.matches.forEach((match, i) => {
         const scorePercentage = match.score * 100;
         console.log(`\nMatch ${i + 1} (${scorePercentage.toFixed(1)}%):`);
