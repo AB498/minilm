@@ -1,0 +1,12 @@
+{
+  "build": {
+    "builder": "nixpacks",
+    "buildCommand": "bash build.sh"
+  },
+  "deploy": {
+    "startCommand": "source /opt/venv/bin/activate && python main.py",
+    "healthcheckPath": "/info",
+    "healthcheckTimeout": 100,
+    "restartPolicyType": "on_failure"
+  }
+}
