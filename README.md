@@ -11,7 +11,7 @@ A simple frontend application to test the MiniLM API endpoints, including text e
 ## How to Use
 
 1. Open `index.html` in your web browser
-2. The default API URL is set to `https://minilm-yzpj.vercel.app`, but you can change it to your local server (e.g., `http://localhost:3000`) if needed
+2. The default API URL is set to `https://minilm-production.up.railway.app`, but you can change it to your local server (e.g., `http://localhost:3000`) if needed
 3. Use the different sections to test each endpoint:
 
 ### Health Check
@@ -45,12 +45,12 @@ The frontend interacts with the following API endpoints:
 
 **curl:**
 ```bash
-curl https://minilm-yzpj.vercel.app/health
+curl https://minilm-production.up.railway.app/health
 ```
 
 **JavaScript:**
 ```javascript
-fetch('https://minilm-yzpj.vercel.app/health')
+fetch('https://minilm-production.up.railway.app/health')
   .then(response => response.json())
   .then(data => console.log(data));
 ```
@@ -59,14 +59,14 @@ fetch('https://minilm-yzpj.vercel.app/health')
 
 **curl:**
 ```bash
-curl -X POST https://minilm-yzpj.vercel.app/embed \
+curl -X POST https://minilm-production.up.railway.app/embed \
   -H "Content-Type: application/json" \
   -d '{"texts": ["Hello world", "This is a test"]}'
 ```
 
 **JavaScript:**
 ```javascript
-fetch('https://minilm-yzpj.vercel.app/embed', {
+fetch('https://minilm-production.up.railway.app/embed', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -83,14 +83,14 @@ fetch('https://minilm-yzpj.vercel.app/embed', {
 
 **curl:**
 ```bash
-curl -X POST https://minilm-yzpj.vercel.app/answer \
+curl -X POST https://minilm-production.up.railway.app/answer \
   -H "Content-Type: application/json" \
   -d '{"question": "How do I donate?"}'
 ```
 
 **JavaScript:**
 ```javascript
-fetch('https://minilm-yzpj.vercel.app/answer', {
+fetch('https://minilm-production.up.railway.app/answer', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
@@ -105,7 +105,7 @@ fetch('https://minilm-yzpj.vercel.app/answer', {
 
 **Postman:**
 1. Set request type to POST
-2. Enter URL: https://minilm-yzpj.vercel.app/answer
+2. Enter URL: https://minilm-production.up.railway.app/answer
 3. Go to Body tab, select "raw" and "JSON"
 4. Enter: `{"question": "How do I donate?"}`
 5. Click Send

@@ -72,9 +72,9 @@
         <div class="api-url-container">
             <div class="input-group">
                 <span class="input-group-text">API URL</span>
-                <input type="text" id="apiUrl" class="form-control" value="https://minilm-yzpj.vercel.app" placeholder="Enter API URL">
+                <input type="text" id="apiUrl" class="form-control" value="https://minilm-production.up.railway.app" placeholder="Enter API URL">
             </div>
-            <div class="form-text">Default: https://minilm-yzpj.vercel.app</div>
+            <div class="form-text">Default: https://minilm-production.up.railway.app</div>
         </div>
 
         <div class="row">
@@ -155,7 +155,7 @@
                 responseContainer.style.display = 'none';
                 
                 try {
-                    const apiUrl = document.getElementById('apiUrl').value.trim() || 'https://minilm-yzpj.vercel.app';
+                    const apiUrl = document.getElementById('apiUrl').value.trim() || 'https://minilm-production.up.railway.app';
                     const response = await fetch(`${apiUrl}/health`);
                     const data = await response.json();
                     
@@ -195,7 +195,7 @@
                 responseContainer.style.display = 'none';
                 
                 try {
-                    const apiUrl = document.getElementById('apiUrl').value.trim() || 'https://minilm-yzpj.vercel.app';
+                    const apiUrl = document.getElementById('apiUrl').value.trim() || 'https://minilm-production.up.railway.app';
                     const texts = textInput.split('\n').filter(text => text.trim() !== '');
                     
                     const response = await fetch(`${apiUrl}/embed`, {
@@ -256,7 +256,7 @@
                 responseContainer.style.display = 'none';
                 
                 try {
-                    const apiUrl = document.getElementById('apiUrl').value.trim() || 'https://minilm-yzpj.vercel.app';
+                    const apiUrl = document.getElementById('apiUrl').value.trim() || 'https://minilm-production.up.railway.app';
                     
                     const response = await fetch(`${apiUrl}/answer`, {
                         method: 'POST',
