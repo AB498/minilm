@@ -120,7 +120,9 @@ The repository includes two test scripts:
 
 Run these scripts after starting the server to verify that everything is working correctly.
 
-## Deployment on Railway.app
+## Deployment Options
+
+### Option 1: Railway.app (Python)
 
 This project is configured for easy deployment on Railway.app:
 
@@ -132,13 +134,9 @@ This project is configured for easy deployment on Railway.app:
    - Or connect your GitHub repository to Railway manually
 
 3. **Configuration**
-   - Railway will automatically detect the Python project
-   - The deployment will use the following files:
+   - Railway will automatically detect the Python project based on:
      - `main.py` - Entry point for the application
      - `requirements.txt` - Dependencies
-     - `runtime.txt` - Python version specification
-     - `Procfile` - Process type declaration
-     - `nixpacks.toml` - Build configuration
 
 4. **Environment Variables**
    - No additional environment variables are required for basic functionality
@@ -148,3 +146,34 @@ This project is configured for easy deployment on Railway.app:
    - Once deployed, Railway will provide a URL for your application
    - Use this URL to access the API endpoints described above
    - Replace `http://localhost:5000` with your Railway URL in any API calls
+
+### Option 2: Vercel (JavaScript)
+
+This project also includes Vercel serverless functions for deployment:
+
+1. **Deploy to Vercel**
+   - Fork or clone this repository
+   - Connect your GitHub repository to Vercel
+   - Vercel will automatically detect the configuration
+
+2. **API Endpoints**
+   - `/api/embed` - Generate embeddings for text
+   - `/api/faq` - Find best matching FAQ for a query
+   - `/api/info` - Get model information
+
+3. **JavaScript Implementation**
+   - Uses the Xenova/transformers library for JavaScript
+   - Implements the same functionality as the Python version
+   - Optimized for serverless deployment
+
+4. **Usage Example**
+   ```javascript
+   // Generate embeddings
+   const response = await fetch('https://your-vercel-app.vercel.app/api/embed', {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+     body: JSON.stringify({ texts: ["Example text"] })
+   });
+   const data = await response.json();
+   console.log(data.embeddings);
+   ```
