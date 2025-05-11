@@ -1,0 +1,7 @@
+flask==2.3.3
+sentence-transformers==2.5.1
+numpy==1.26.4
+torch>=2.0.0
+transformers>=4.30.0
+setuptools>=65.5.1
+gunicorn==21.2.0
