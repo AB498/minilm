@@ -1,17 +1,25 @@
 {
-  "name": "minilm-vercel",
+  "name": "minilm",
   "version": "1.0.0",
-  "description": "MiniLM Text Embedding Server as Vercel Serverless Functions",
   "main": "index.js",
-  "type": "module",
   "scripts": {
-    "dev": "node server.js",
-    "deploy": "vercel deploy --prod"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AB498/minilm.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AB498/minilm/issues"
+  },
+  "homepage": "https://github.com/AB498/minilm#readme",
+  "description": "",
   "dependencies": {
-    "@huggingface/transformers": "^3.0.0-alpha.14"
-  },
-  "devDependencies": {
-    "vercel": "^33.5.3"
+    "@huggingface/transformers": "^3.0.0-alpha.14",
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
   }
 }

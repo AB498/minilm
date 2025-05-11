@@ -1,54 +1,63 @@
-import express from 'express';
-import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
+// Import required packages
+const express = require('express');
+const { pipeline } = require('@huggingface/transformers');
+const cors = require('cors');
 
-// Import API handlers
-import embedHandler from './api/embed.js';
-import faqHandler from './api/faq.js';
-import infoHandler from './api/info.js';
-import indexHandler from './api/index.js';
-
-// Get __dirname equivalent in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+// Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
 app.use(express.json());
-app.use(express.static('.'));
+app.use(cors());
 
-// API routes
-app.post('/api/embed', async (req, res) => {
-  await embedHandler(req, res);
+// Store the pipeline instance
+let embeddingPipeline = null;
+
+// Initialize the embedding pipeline
+async function initializeEmbeddingPipeline() {
+  try {
+    console.log('Initializing embedding pipeline...');
+    embeddingPipeline = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+    console.log('Embedding pipeline initialized successfully!');
+  } catch (error) {
+    console.error('Error initializing embedding pipeline:', error);
+  }
+}
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Server is running' });
 });
 
-app.post('/api/faq', async (req, res) => {
-  await faqHandler(req, res);
-});
+// Embedding endpoint
+app.post('/embed', async (req, res) => {
+  try {
+    const { texts } = req.body;
 
-app.get('/api/info', async (req, res) => {
-  await infoHandler(req, res);
-});
+    if (!texts || !Array.isArray(texts)) {
+      return res.status(400).json({ error: 'Please provide an array of texts to embed' });
+    }
 
-app.get('/api', (req, res) => {
-  indexHandler(req, res);
-});
+    if (!embeddingPipeline) {
+      return res.status(503).json({ error: 'Embedding model is still loading. Please try again later.' });
+    }
 
-// Serve index.html for the root route
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+    const embeddings = await embeddingPipeline(texts, { pooling: 'mean', normalize: true });
+
+    // Convert tensor to JavaScript array
+    const embeddingsArray = embeddings.tolist();
+
+    res.status(200).json({ embeddings: embeddingsArray });
+  } catch (error) {
+    console.error('Error generating embeddings:', error);
+    res.status(500).json({ error: 'Failed to generate embeddings' });
+  }
 });
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-  console.log('API endpoints:');
-  console.log(`- POST http://localhost:${PORT}/api/embed`);
-  console.log(`- POST http://localhost:${PORT}/api/faq`);
-  console.log(`- GET  http://localhost:${PORT}/api/info`);
+  console.log(`Server running on port ${PORT}`);
+  // Initialize the embedding pipeline when the server starts
+  initializeEmbeddingPipeline();
 });
