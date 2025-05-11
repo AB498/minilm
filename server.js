@@ -2,6 +2,7 @@
 const express = require('express');
 const { pipeline } = require('@huggingface/transformers');
 const cors = require('cors');
+const path = require('path');
 
 // Initialize Express app
 const app = express();
@@ -10,6 +11,9 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(express.json());
 app.use(cors());
+
+// Serve static files from the current directory
+app.use(express.static(path.join(__dirname)));
 
 // Store the pipeline instance
 let embeddingPipeline = null;
@@ -118,6 +122,11 @@ function cosineSimilarity(vecA, vecB) {
   return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
 }
 
+// Serve index.html at the root URL
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', message: 'Server is running' });
@@ -196,6 +205,12 @@ app.post('/answer', async (req, res) => {
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`API endpoints available at:`);
+  console.log(`  - http://localhost:${PORT}/health`);
+  console.log(`  - http://localhost:${PORT}/embed`);
+  console.log(`  - http://localhost:${PORT}/answer`);
+  console.log(`Frontend available at: http://localhost:${PORT}/`);
+
   // Initialize the embedding pipeline when the server starts
   initializeEmbeddingPipeline();
 });

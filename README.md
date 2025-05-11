@@ -39,15 +39,93 @@ The frontend interacts with the following API endpoints:
 - `POST /embed`: Generate embeddings for an array of texts
 - `POST /answer`: Find the most relevant answer for a natural language question
 
+### API Usage Examples
+
+#### Health Check
+
+**curl:**
+```bash
+curl https://minilm-yzpj.vercel.app/health
+```
+
+**JavaScript:**
+```javascript
+fetch('https://minilm-yzpj.vercel.app/health')
+  .then(response => response.json())
+  .then(data => console.log(data));
+```
+
+#### Text Embedding
+
+**curl:**
+```bash
+curl -X POST https://minilm-yzpj.vercel.app/embed \
+  -H "Content-Type: application/json" \
+  -d '{"texts": ["Hello world", "This is a test"]}'
+```
+
+**JavaScript:**
+```javascript
+fetch('https://minilm-yzpj.vercel.app/embed', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    texts: ["Hello world", "This is a test"]
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+#### FAQ Answer
+
+**curl:**
+```bash
+curl -X POST https://minilm-yzpj.vercel.app/answer \
+  -H "Content-Type: application/json" \
+  -d '{"question": "How do I donate?"}'
+```
+
+**JavaScript:**
+```javascript
+fetch('https://minilm-yzpj.vercel.app/answer', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    question: "How do I donate?"
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+**Postman:**
+1. Set request type to POST
+2. Enter URL: https://minilm-yzpj.vercel.app/answer
+3. Go to Body tab, select "raw" and "JSON"
+4. Enter: `{"question": "How do I donate?"}`
+5. Click Send
+
 ## Development
 
-To run the API server locally:
+### Running the API Server Locally
 
 1. Clone the repository
 2. Install dependencies: `npm install`
-3. Start the server: `npm start`
-4. Open `index.html` in your browser
-5. Change the API URL to `http://localhost:3000`
+3. Start the server: `npm start` (or `node server.js`)
+4. The server will run on http://localhost:3000 by default
+
+### Running the Frontend Locally
+
+You can open the `index.html` file directly in your browser, or use the included static file server:
+
+1. Run: `node serve.js`
+2. Open http://localhost:8080/index.html in your browser
+3. Change the API URL to `http://localhost:3000` if you're running the API server locally
 
 ## Testing
 
